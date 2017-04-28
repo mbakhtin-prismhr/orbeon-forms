@@ -207,6 +207,16 @@
                             as="xs:string*"
                             select="fr:find-emails('fr-email-recipient', 'oxf.fr.email.to')"/>
 
+                        <xsl:variable
+                            name="cc-email-addresses"
+                            as="xs:string*"
+                            select="fr:find-emails('fr-email-cc', 'oxf.fr.email.cc')"/>
+
+                        <xsl:variable
+                            name="bcc-email-addresses"
+                            as="xs:string*"
+                            select="fr:find-emails('fr-email-bcc', 'oxf.fr.email.bcc')"/>
+
                         <!-- Find `fr-email-subject` at the top-level and in section templates -->
                         <xsl:variable
                             name="subject-values"
@@ -260,6 +270,20 @@
                                     <xsl:value-of select="."/>
                                 </email>
                             </to>
+                        </xsl:for-each>
+                        <xsl:for-each select="$cc-email-addresses">
+                            <cc>
+                                <email>
+                                    <xsl:value-of select="."/>
+                                </email>
+                            </cc>
+                        </xsl:for-each>
+                        <xsl:for-each select="$bcc-email-addresses">
+                            <bcc>
+                                <email>
+                                    <xsl:value-of select="."/>
+                                </email>
+                            </bcc>
                         </xsl:for-each>
                         <!-- Subject -->
                         <subject>
