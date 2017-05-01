@@ -45,13 +45,37 @@ class XFormsSetvalueAction extends XFormsAction {
                 case Some(valueExpression) ⇒
                     // Value to set is computed with an XPath expression
                     if (orbeon3Compatible) {
+                        if (valueExpression.length == 0) {
+                            if (indentedLogger.isDebugEnabled)
+                                indentedLogger.logDebug(
+                                    "xf:setvalue",
+                                    "not setting instance value",
+                                    "reason",
+                                    "value is null",
+                                    "value",
+                                    "null"
+                                )
+                            return
+                        }
+
                         val testResult = actionInterpreter.evaluateKeepItems(actionElement,
                             contextStack.getCurrentBindingContext.nodeset,
                             contextStack.getCurrentBindingContext.position,
                             valueExpression
                         )
 
-                        if (testResult == null || testResult.size() == 0) return
+                        if (testResult == null || testResult.size() == 0) {
+                            if (indentedLogger.isDebugEnabled)
+                                indentedLogger.logDebug(
+                                    "xf:setvalue",
+                                    "not setting instance value",
+                                    "reason",
+                                    "value is null",
+                                    "value",
+                                    "null"
+                                )
+                            return
+                        }
                     }
 
                     actionInterpreter.evaluateAsString(
