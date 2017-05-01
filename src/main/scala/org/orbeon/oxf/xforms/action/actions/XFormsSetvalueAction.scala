@@ -13,6 +13,7 @@
  */
 package org.orbeon.oxf.xforms.action.actions
 
+import org.orbeon.oxf.properties.Properties
 import org.orbeon.oxf.xforms.XFormsConstants
 import org.orbeon.oxf.common.OXFException
 import org.orbeon.saxon.om.NodeInfo
@@ -23,6 +24,8 @@ import org.orbeon.oxf.xforms.action.{DynamicActionContext, XFormsAction}
  * 10.1.9 The setvalue Element
  */
 class XFormsSetvalueAction extends XFormsAction {
+    def orbeon3Compatible =
+        Properties.instance.getPropertySet.getBoolean("oxf.orbeon3.compatible", default = false)
 
     override def execute(actionContext: DynamicActionContext): Unit = {
 
@@ -35,11 +38,22 @@ class XFormsSetvalueAction extends XFormsAction {
         
         val valueExpression = Option(actionElement.attributeValue(XFormsConstants.VALUE_QNAME))
 
+
         // Determine value to set
         val valueToSet =
             valueExpression match {
                 case Some(valueExpression) ⇒
                     // Value to set is computed with an XPath expression
+                    if (orbeon3Compatible) {
+                        val testResult = actionInterpreter.evaluateKeepItems(actionElement,
+                            contextStack.getCurrentBindingContext.nodeset,
+                            contextStack.getCurrentBindingContext.position,
+                            valueExpression
+                        )
+
+                        if (testResult == null || testResult.size() == 0) return
+                    }
+
                     actionInterpreter.evaluateAsString(
                         actionElement,
                         contextStack.getCurrentBindingContext.nodeset,
